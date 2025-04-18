@@ -65,7 +65,7 @@ def fetch_trends(request: FetchTrendsRequest):
         reddit = praw.Reddit(
             client_id=os.getenv("wrXt143D1tNsbd8yYr9RHA"),
             client_secret=os.getenv("xZuLAExIYss4VaU6R1fFR33-g4qQEQ"),
-            user_agent=os.getenv("REDDIT_USER_AGENT")
+            user_agent=os.getenv("eavy-Bonus1597")
         )
         for keyword in request.keywords:
             for submission in reddit.subreddit("all").search(keyword, limit=5, sort="top"):
