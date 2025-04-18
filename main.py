@@ -55,13 +55,26 @@ def summarize(request: SummarizeRequest):
     # Dummy summary logic
     return SummarizeResponse(summary=f"Summary of: {request.content}")
 
+import os
+import praw
+
 @app.post("/research/fetch-trends", response_model=FetchTrendsResponse)
 def fetch_trends(request: FetchTrendsRequest):
-    # Dummy trends logic
+    trends = []
+    if "reddit" in [s.lower() for s in request.sources]:
+        reddit = praw.Reddit(
+            client_id=os.getenv("REDDIT_CLIENT_ID"),
+            client_secret=os.getenv("REDDIT_CLIENT_SECRET"),
+            user_agent=os.getenv("REDDIT_USER_AGENT")
+        )
+        for keyword in request.keywords:
+            for submission in reddit.subreddit("all").search(keyword, limit=5, sort="top"):
+                trends.append(submission.title)
+    # questions and gaps extraction can be added here
     return FetchTrendsResponse(
-        trends=["Trend 1", "Trend 2"],
-        questions=["What is X?"],
-        gaps=["Gap 1"]
+        trends=trends,
+        questions=[],
+        gaps=[]
     )
 
 @app.post("/scheduler/generate-post", response_model=GeneratePostResponse)
@@ -78,3 +91,4 @@ def schedule_post(request: SchedulePostRequest):
 def approve_reply(request: ApproveReplyRequest):
     # Dummy approval logic
     return ApproveReplyResponse(status="approved" if request.approve else "rejected")
+
